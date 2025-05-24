@@ -40,6 +40,22 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  bool _showTermsCheckbox = false;
+  bool _acceptedTerms = false;
+
+  void _onCreateAccountPressed() {
+    print('Finalizando criação de conta');
+    setState(() {
+      _showTermsCheckbox = true;
+    });
+    if (_showTermsCheckbox) {
+      print('Finalizando criação de conta');
+      setState(() {
+        _showTermsCheckbox = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,12 +141,35 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(
                           decoration: TextDecoration.underline,
                           color: Colors.green,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ],
                 ),
-
+                if (_showTermsCheckbox) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: _acceptedTerms,
+                        activeColor: Colors.green,
+                        onChanged: (value) {
+                          setState(() {
+                            _acceptedTerms = value ?? false;
+                          });
+                        },
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Li e estou ciente quanto às condições de tratamento dos meus dados conforme descrito na Política de Privacidade do banco.',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 24),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -143,18 +182,60 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // TODO: Implement login logic
-                      print('Username: ${_usernameController.text}');
-                      print('Password: ${_passwordController.text}');
-                    }
-                  },
-                  child: const Text(
-                    'Criar conta',
-                    style: TextStyle(color: Colors.white),
+                  onPressed:
+                      (_showTermsCheckbox && !_acceptedTerms)
+                          ? null
+                          : () {
+                            if (!_showTermsCheckbox) {
+                              setState(() {
+                                _showTermsCheckbox = true;
+                              });
+                              return;
+                            }
+                            if (_showTermsCheckbox &&
+                                _acceptedTerms &&
+                                _formKey.currentState!.validate()) {
+                              // TODO: Implement account creation logic
+                              print('Username: ${_usernameController.text}');
+                              print('Password: ${_passwordController.text}');
+                              _onCreateAccountPressed();
+                            }
+                          },
+                  child: Text(
+                    _showTermsCheckbox ? 'Finalizar criação' : 'Criar conta',
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
+
+                if (!_showTermsCheckbox) ...[
+                  const SizedBox(height: 16),
+                  Text('Já tem uma conta?'),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 45,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      side: const BorderSide(color: Colors.red, width: 2),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        //TODO: Implement login logic
+                        print('Username: ${_usernameController.text}');
+                        print('Password: ${_passwordController.text}');
+                      }
+                    },
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
