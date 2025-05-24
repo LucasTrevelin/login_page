@@ -202,7 +202,9 @@ class _LoginPageState extends State<LoginPage> {
                             }
                           },
                   child: Text(
-                    _showTermsCheckbox ? 'Finalizar criação' : 'Criar conta',
+                    _showTermsCheckbox
+                        ? 'Finalizar criação e logar'
+                        : 'Criar conta',
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
